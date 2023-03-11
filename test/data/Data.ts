@@ -51,16 +51,12 @@ export function FixedDataClass<A extends Record<string, any>>() {
 }
 
 export const Class = <A extends Record<string, any>>() => {
-  class TMP extends FixedDataClass<A>() {
-    constructor(a: A) {
-      super(a)
-    }
+  return class extends FixedDataClass<A>() {
     [cloneTrait](a: any) {
       // return new (this.constructor as any)(a)
       return Object.setPrototypeOf(a, Object.getPrototypeOf(this))
     }
   }
-  return TMP as any as new(args: Omit<A, keyof Equal.Equal>) => Data.Data<A>
 }
 
 test("Class", () => {
