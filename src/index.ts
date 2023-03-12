@@ -14,12 +14,17 @@ import * as S from "@effect/data/Struct"
 
 const clone = <A>(original: A, copy: A) => {
   if (original[cloneTrait]) {
-    return original[cloneTrait](copy)
+    const originalWithClone = original as A & Clone
+    return originalWithClone[cloneTrait](copy)
   }
-  return Object.setPrototypeOf(copy, Object.getPrototypeOf(original))
+  return Object.setPrototypeOf(copy, Object.getPrototypeOf(original)) as A
 }
 
 export const cloneTrait = Symbol()
+
+export interface Clone {
+  [cloneTrait](this: this, that: any): this
+}
 
 /**
  * @since 1.0.0
