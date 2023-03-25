@@ -63,7 +63,7 @@ describe("Random Class", () => {
 })
 
 test("Class without Trait", () => {
-  class ABC extends Data.Class<{ readonly a: number; readonly b: number }>() {}
+  class ABC extends Data.Class<{ readonly a: number; readonly b: number }> {}
   const opt = Optic.id<{ a: number; b: number }>()
   const v = new ABC({ a: 1, b: 2 })
   const v2 = Optic.replace(opt.at("a"))(1)(v)
@@ -83,7 +83,7 @@ test("Class without Trait", () => {
 })
 
 test("Class with Trait", () => {
-  class ABCWithTrait extends Data.Class<{ readonly a: number; readonly b: number }>() {
+  class ABCWithTrait extends Data.Class<{ readonly a: number; readonly b: number }> {
     [Optic.cloneTrait](a: any) {
       return new (this.constructor as any)(a)
       // return Object.setPrototypeOf(a, Object.getPrototypeOf(this))
