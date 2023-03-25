@@ -12,6 +12,20 @@ import * as RR from "@effect/data/ReadonlyRecord"
 import type { ReadonlyRecord } from "@effect/data/ReadonlyRecord"
 import * as S from "@effect/data/Struct"
 
+const clone = <A>(original: A, copy: A) => {
+  if (original[cloneTrait]) {
+    const originalWithClone = original as A & Clone
+    return originalWithClone[cloneTrait](copy)
+  }
+  return Object.setPrototypeOf(copy, Object.getPrototypeOf(original)) as A
+}
+
+export const cloneTrait = Symbol()
+
+export interface Clone {
+  [cloneTrait](this: this, that: any): this
+}
+
 /**
  * @since 1.0.0
  */
@@ -294,18 +308,18 @@ const at = <S, Key extends keyof S & (string | symbol)>(key: Key): Lens<S, S[Key
         out[key] = b
         return out
       }
-      return { ...s, [key]: b }
+      return clone(s, { ...s, [key]: b })
     })
 
 const pick = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
   ...keys: Keys
 ): Lens<S, { readonly [K in Keys[number]]: S[K] }> =>
-  lens(S.pick(...keys), (a) => (s) => ({ ...s, ...a }))
+  lens(S.pick(...keys), (a) => (s) => clone(s, { ...s, ...a }))
 
 const omit = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
   ...keys: Keys
 ): Lens<S, { readonly [K in Exclude<keyof S, Keys[number]>]: S[K] }> =>
-  lens(S.omit(...keys), (a) => (s) => ({ ...s, ...a }))
+  lens(S.omit(...keys), (a) => (s) => clone(s, { ...s, ...a }))
 
 const filter: {
   <S extends A, B extends A, A = S>(
