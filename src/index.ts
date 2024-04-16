@@ -25,6 +25,19 @@ const orElse: {
     that: (e1: E1) => Either.Either<E2, B>
   ): Either.Either<E2, A | B> => Either.isLeft(self) ? that(self.left) : Either.right(self.right)
 )
+const clone = <A>(original: A, copy: A) => {
+  if (cloneTrait in (original as any)) {
+    const originalWithClone = original as A & Clone
+    return originalWithClone[cloneTrait](copy)
+  }
+  return Object.setPrototypeOf(copy, Object.getPrototypeOf(original)) as A
+}
+
+export const cloneTrait = Symbol()
+
+export interface Clone {
+  [cloneTrait](this: this, that: any): this
+}
 
 /**
  * @since 1.0.0
@@ -314,18 +327,18 @@ const at = <S, Key extends keyof S & (string | symbol)>(key: Key): Lens<S, S[Key
         out[key] = b
         return out
       }
-      return { ...s, [key]: b }
+      return clone(s, { ...s, [key]: b })
     })
 
 const pick = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
   ...keys: Keys
 ): Lens<S, Simplify<Pick<S, Keys[number]>>> =>
-  lens(S.pick(...keys), (a) => (s) => ({ ...s, ...a as any }))
+  lens(S.pick(...keys), (a) => (s) => clone(s, { ...s, ...(a as any) }))
 
 const omit = <S, Keys extends readonly [keyof S, ...Array<keyof S>]>(
   ...keys: Keys
 ): Lens<S, Simplify<Omit<S, Keys[number]>>> =>
-  lens(S.omit(...keys), (a) => (s) => ({ ...s, ...a as any }))
+  lens(S.omit(...keys), (a) => (s) => clone(s, { ...s, ...(a as any) }))
 
 const filter: {
   <S extends A, B extends A, A = S>(
