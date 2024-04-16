@@ -20,7 +20,7 @@ const clone = <A>(original: A, copy: A) => {
 /**
  * @since 1.0.0
  */
-export const cloneTrait = Symbol()
+export const cloneTrait = Symbol.for("clone-trait")
 
 /**
  * @since 1.0.0
