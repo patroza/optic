@@ -1,12 +1,12 @@
 /**
  * @since 1.0.0
  */
+import * as ReadonlyArray from "effect/Array"
 import * as Either from "effect/Either"
 import { identity, pipe } from "effect/Function"
 import * as Option from "effect/Option"
 import type { Predicate, Refinement } from "effect/Predicate"
-import * as ReadonlyArray from "effect/ReadonlyArray"
-import * as ReadonlyRecord from "effect/ReadonlyRecord"
+import * as ReadonlyRecord from "effect/Record"
 import * as Struct from "effect/Struct"
 
 /**

@@ -4,8 +4,8 @@
 
 import type { Iso, PolyIso } from "@fp-ts/optic"
 import * as Optic from "@fp-ts/optic"
-import type { NonEmptyReadonlyArray } from "effect/ReadonlyArray"
-import * as ReadonlyArray from "effect/ReadonlyArray"
+import type { NonEmptyReadonlyArray } from "effect/Array"
+import * as ReadonlyArray from "effect/Array"
 
 /**
  * An optic that accesses the `Cons` case of a `NonEmptyReadonlyArray`.
