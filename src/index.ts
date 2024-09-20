@@ -9,6 +9,20 @@ import type { Predicate, Refinement } from "effect/Predicate"
 import * as Record from "effect/Record"
 import * as Struct from "effect/Struct"
 
+const clone = <A>(original: A, copy: A) => {
+  if (cloneTrait in (original as any)) {
+    const originalWithClone = original as A & Clone
+    return originalWithClone[cloneTrait](copy)
+  }
+  return Object.setPrototypeOf(copy, Object.getPrototypeOf(original)) as A
+}
+
+export const cloneTrait = Symbol()
+
+export interface Clone {
+  [cloneTrait](this: this, that: any): this
+}
+
 /**
  * @since 1.0.0
  */
@@ -300,7 +314,7 @@ const at = <S, Key extends keyof S & (string | symbol)>(key: Key): Lens<S, S[Key
         out[key] = b
         return out
       }
-      return { ...s, [key]: b }
+      return clone(s, { ...s, [key]: b })
     })
 
 const filter: {
@@ -391,11 +405,11 @@ class Builder<
   }
 
   pick(...keys: readonly [PropertyKey, ...Array<PropertyKey>]) {
-    return this.compose(lens(Struct.pick(...keys), (a) => (s: any) => ({ ...s, ...a })))
+    return this.compose(lens(Struct.pick(...keys), (a) => (s: any) => (clone(s, { ...s, ...a }))))
   }
 
   omit(...keys: readonly [PropertyKey, ...Array<PropertyKey>]) {
-    return this.compose(lens(Struct.omit(...keys), (a) => (s: any) => ({ ...s, ...a })))
+    return this.compose(lens(Struct.omit(...keys), (a) => (s: any) => (clone(s,{ ...s, ...a }))))
   }
 
   filter(predicate: Predicate<any>, message?: string) {
